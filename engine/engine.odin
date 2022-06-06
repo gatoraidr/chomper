@@ -8,17 +8,25 @@ import "internal/ui"
 import "internal/core"
 import "core:strings"
 import "vendor:sdl2"
-
-Exit :: proc(w: ^core.window, r: ^core.renderer) {
+import img "vendor:sdl2/image"
+///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
+Exit :: proc(w: []^core.window, r: []^core.renderer) {
     core.ExitProc()
-    DestroyRenderer(r)
-    DestroyWindow(w)
+    for win in w {
+        DestroyWindow(win)
+    }
+    for ren in r {
+        DestroyRenderer(ren)
+    }
     sdl2.Quit()
+    img.Quit()
 }
+///Returns any error that is encountered, as a string
 GetError :: proc() -> string{
     return sdl2.GetErrorString()
 }
-CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extra_flags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
+///Creates a window with the given title, size and flags
+CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
     r: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -28,8 +36,8 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
         case .vulkan:
             r = sdl2.WINDOW_VULKAN
     }
-    if len(extra_flags) > 0 {
-        for f in extra_flags {
+    if len(extraFlags) > 0 {
+        for f in extraFlags {
             switch f {
                 case .fullscreen:
                     r = r | sdl2.WINDOW_FULLSCREEN
@@ -53,7 +61,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     return {x}
 
 }
-
+///Creates a renderer for the given core.window
 CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {core.renderer_flags.accelerated}, index: i32 = -1) -> core.renderer {
     r: sdl2.RendererFlags
     if len(flags) > 0 {
@@ -77,7 +85,7 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     return {x}
 
 }
-
+///Creates both a window and a renderer for the window
 CreateWindowAndRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
     wf: sdl2.WindowFlags
     switch renderer {
@@ -131,18 +139,20 @@ CreateWindowAndRenderer :: proc(title: string, x, y, width, height: int, rendere
     }
     return {w}, {r}
 }
-
+///Initialize SDL2 and the game engine
 Initialize :: proc() {
     x := sdl2.Init(sdl2.INIT_EVERYTHING)
     if (x != 0) { panic("Failed to init SDL2") }
+    i := img.Init(img.INIT_PNG | img.INIT_JPG)
+    if (x != 0) { panic("Failed to init SDL2/image") }
     return
 }
-
+///Destroys the given core.renderer
 DestroyRenderer :: proc(r: ^core.renderer) {
     sdl2.DestroyRenderer(r)
     return
 }
-
+///Destroys the given core.window
 DestroyWindow :: proc(r: ^core.window) {
     sdl2.DestroyWindow(r)
     return
@@ -159,13 +169,13 @@ SetQuitProc :: proc(p: proc()) {
 ///Similar to WindowShouldClose() in GLFW, use this for the main game loop
 Exiting :: proc() -> bool {
     #partial switch core.DefaultEvent.type {
-        case sdl2.EventType.QUIT:
+        case core.events.Quit:
             return true
     }
     UpdateEvents(&core.DefaultEvent)
     return false
 }
-///Not necessary for most games
+///Not necessary for the almost the entirety of games, just to be safe because event handling procs use core.DefaultEvent
 SetDefaultEvent :: proc(e: core.Event) {
     core.DefaultEvent = e
 }
