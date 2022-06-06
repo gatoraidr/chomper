@@ -8,8 +8,11 @@ import "core:os"
 
 import "vendor:sdl2"
 
+Event :: sdl2.Event
+DefaultEvent := Event{}
 undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
 centeredWindowPos :: sdl2.WINDOWPOS_CENTERED
+ExitProc: proc()
 window :: struct {
     using Window: ^sdl2.Window,
 }
@@ -34,4 +37,8 @@ renderer_flags :: enum {
     accelerated,
     vsync,
     targetTexture,
+}
+
+Events :: struct {
+    
 }
