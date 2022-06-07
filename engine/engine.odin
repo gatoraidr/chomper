@@ -8,12 +8,6 @@ import "internal/ui"
 import "internal/core"
 import "core:strings"
 import "vendor:sdl2"
-<<<<<<< Updated upstream
-
-Exit :: proc(w: ^core.window, r: ^core.renderer) {
-    DestroyRenderer(r)
-    DestroyWindow(w)
-=======
 import img "vendor:sdl2/image"
 ///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
 Exit :: proc(w: [dynamic]^core.window, r: [dynamic]^core.renderer) {
@@ -24,18 +18,13 @@ Exit :: proc(w: [dynamic]^core.window, r: [dynamic]^core.renderer) {
     for ren in r {
         DestroyRenderer(ren)
     }
->>>>>>> Stashed changes
     sdl2.Quit()
 }
 GetError :: proc() -> string{
     return sdl2.GetErrorString()
 }
-<<<<<<< Updated upstream
-CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extra_flags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
-=======
 ///Creates a window with the given title, size and flags
 CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
->>>>>>> Stashed changes
     r: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -98,8 +87,6 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     return ren
 
 }
-<<<<<<< Updated upstream
-=======
 ///Creates both a window and implicitly a renderer for the window
 CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
     wf: sdl2.WindowFlags
@@ -159,7 +146,6 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     return win, ren
 }
 ///Initialize SDL2 and the game engine
->>>>>>> Stashed changes
 Initialize :: proc() {
     x := sdl2.Init(sdl2.INIT_EVERYTHING)
     if (x != 0) { panic("Failed to init SDL2") }
@@ -171,14 +157,9 @@ DestroyRenderer :: proc(r: ^core.renderer) {
     ordered_remove(&core.AllRenderers, r.AllRendererIndex) 
     return
 }
-<<<<<<< Updated upstream
-DestroyWindow :: proc(r: ^core.window) {
-    sdl2.DestroyWindow(r)
-=======
 ///Destroys the given core.window
 DestroyWindow :: proc(w: ^core.window) {
     sdl2.DestroyWindow(w)
     ordered_remove(&core.AllWindows, w.AllWindowIndex)
->>>>>>> Stashed changes
     return
 }

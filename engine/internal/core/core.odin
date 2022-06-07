@@ -10,8 +10,6 @@ import "vendor:sdl2"
 
 undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
 centeredWindowPos :: sdl2.WINDOWPOS_CENTERED
-<<<<<<< Updated upstream
-=======
 ExitProc: proc()
 AllWindows: [dynamic]^window
 AllRenderers: [dynamic]^renderer
@@ -39,7 +37,6 @@ events :: _events{
     TextEditing = sdl2.EventType.TEXTEDITING,
     TextInput = sdl2.EventType.TEXTINPUT,
 }
->>>>>>> Stashed changes
 window :: struct {
     using Window: ^sdl2.Window,
     AllWindowIndex: int,

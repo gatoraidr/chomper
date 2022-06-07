@@ -10,16 +10,6 @@ import "engine/internal/draw"
 import "core:fmt"
 main :: proc() {
     engine.Initialize()
-<<<<<<< Updated upstream
-    fmt.println("init")
-    w := engine.CreateWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, 700, 800)
-    r := engine.CreateRenderContext(&w)
-    defer engine.Exit(&w, &r)
-    fmt.print(engine.GetError())
-    for true {
-        draw.clearWindow(&r, 255, 255, 255, 255)
-        draw.showRenderer(&r)
-=======
     w, r := engine.CreateWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, 1000, 900)
     t := draw.LoadTexture(&r, "/home/sharpcdf/Pictures/dark-minimal-mountains.png")
     //fmt.printf("x: {}, y: {}, w: {}, h: {}, tex: {}", t.x, t.y, t.width, t.height, t.Texture)
@@ -32,6 +22,5 @@ main :: proc() {
         }
         fmt.printf("{}\n", engine.GetError())
         draw.RenderTexture(&r, t) //*this is the error
->>>>>>> Stashed changes
     }
 }

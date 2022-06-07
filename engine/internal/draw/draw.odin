@@ -5,9 +5,6 @@ package draw
 
 import "vendor:sdl2"
 import "../core"
-<<<<<<< Updated upstream
-
-=======
 import "core:strings"
 import "core:fmt"
 import "../../../engine"
@@ -27,15 +24,12 @@ NewRectangle :: proc(x, y, w, h: f32) -> Rectangle {
     r := Rectangle{&rec, math.Size{w, h}, math.Vector2{x, y}}
     return r
 }
->>>>>>> Stashed changes
 clearWindow :: proc(ren: ^core.renderer, r, g, b, a: u8) {
     sdl2.SetRenderDrawColor(ren, r, g, b, a)
     sdl2.RenderClear(ren)
 }
 showRenderer :: proc(ren: ^core.renderer) {
     sdl2.RenderPresent(ren)
-<<<<<<< Updated upstream
-=======
 }
 clearAndShowRenderer :: proc(ren: ^core.renderer, r, g, b, a: u8) {
     clearWindow(ren, r, g, b, a)
@@ -63,5 +57,4 @@ RenderTexture :: proc(ren: ^core.renderer, tex: ^Texture, rec: ^Rectangle = &Rec
     fmt.print(engine.GetError())
     sdl2.RenderCopy(ren, tex, &Rectangle{}, rec)
     fmt.print(engine.GetError())
->>>>>>> Stashed changes
 }
