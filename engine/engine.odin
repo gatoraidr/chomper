@@ -10,7 +10,7 @@ import "core:strings"
 import "vendor:sdl2"
 import img "vendor:sdl2/image"
 ///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
-Exit :: proc(w: []^core.window, r: []^core.renderer) {
+Exit :: proc(w: [dynamic]^core.window, r: [dynamic]^core.renderer) {
     core.ExitProc()
     for win in w {
         DestroyWindow(win)
@@ -26,7 +26,7 @@ GetError :: proc() -> string{
     return sdl2.GetErrorString()
 }
 ///Creates a window with the given title, size and flags
-CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
+CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
     r: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -58,7 +58,9 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     if x == nil {
         panic("Failed to create window")
     }
-    return {x}
+    win := core.window{x, len(core.AllWindows)+1}
+    append(&core.AllWindows, &win)
+    return win
 
 }
 ///Creates a renderer for the given core.window
@@ -82,11 +84,13 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     if x == nil {
         panic("Failed to create renderer")
     }
-    return {x}
+    ren := core.renderer{x, len(core.AllRenderers)+1}
+    append(&core.AllRenderers, &ren)
+    return ren
 
 }
-///Creates both a window and a renderer for the window
-CreateWindowAndRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
+///Creates both a window and implicitly a renderer for the window
+CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
     wf: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -118,6 +122,8 @@ CreateWindowAndRenderer :: proc(title: string, x, y, width, height: int, rendere
     if w == nil {
         panic("Failed to create window")
     }
+    win := core.window{w, len(core.AllWindows)+1}
+    append(&core.AllWindows, &win)
     rf: sdl2.RendererFlags
     if len(renderFlags) > 0 {
         for f in renderFlags {
@@ -137,7 +143,9 @@ CreateWindowAndRenderer :: proc(title: string, x, y, width, height: int, rendere
     if r == nil {
         panic("Failed to create renderer")
     }
-    return {w}, {r}
+    ren := core.renderer{r, len(core.AllRenderers)+1}
+    append(&core.AllRenderers, &ren)
+    return win, ren
 }
 ///Initialize SDL2 and the game engine
 Initialize :: proc() {
@@ -150,11 +158,13 @@ Initialize :: proc() {
 ///Destroys the given core.renderer
 DestroyRenderer :: proc(r: ^core.renderer) {
     sdl2.DestroyRenderer(r)
+    ordered_remove(&core.AllRenderers, r.AllRendererIndex) 
     return
 }
 ///Destroys the given core.window
-DestroyWindow :: proc(r: ^core.window) {
-    sdl2.DestroyWindow(r)
+DestroyWindow :: proc(w: ^core.window) {
+    sdl2.DestroyWindow(w)
+    ordered_remove(&core.AllWindows, w.AllWindowIndex)
     return
 }
 ///Polls events to core.DefaultEvent
