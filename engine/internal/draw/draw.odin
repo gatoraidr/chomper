@@ -23,7 +23,7 @@ Rectangle :: struct {
 }
 NewRectangle :: proc(x, y, w, h: f32) -> Rectangle {
     rec := sdl2.Rect{cast(i32)x, cast(i32)y, cast(i32)w, cast(i32)h}
-    r := Rectangle{&rec, math.Size{w, h}, math.Vector2{x, y}}
+    r := Rectangle{&rec, math.Size{cast(int)w, cast(int)h}, math.Vector2{x, y}}
     return r
 }
 clearWindow :: proc(ren: ^core.renderer, r, g, b, a: u8) {
@@ -44,10 +44,10 @@ LoadTexture :: proc(ren: ^core.renderer, file: string) -> ^Texture {
     stb.info(strings.clone_to_cstring(file), &w, &h, &c)
     tex := Texture{
         Texture = i,
-        size = math.Size{cast(f32)w, cast(f32)h},
+        size = math.Size{cast(int)w, cast(int)h},
         //children = {},
     }
-    fmt.printf("loaded texture: {}\n", file)
+    fmt.printf("loaded texture: {}, w: {}, h: {}\n", file, w , h)
     return &tex
 }
 

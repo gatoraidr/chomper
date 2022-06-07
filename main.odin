@@ -12,7 +12,8 @@ main :: proc() {
     engine.Initialize()
     w, r := engine.CreateWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, 1000, 900)
     t := draw.LoadTexture(&r, "/home/sharpcdf/Pictures/dark-minimal-mountains.png")
-    //fmt.printf("x: {}, y: {}, w: {}, h: {}, tex: {}", t.x, t.y, t.width, t.height, t.Texture)
+    rec := draw.NewRectangle(0, 0, 1000, 900)
+    fmt.printf(" w: {}, h: {}, tex: {}, rec: {}", t.size.Width, t.size.Height, t, rec)
     defer engine.Exit(core.AllWindows, core.AllRenderers)
     //fmt.print(engine.GetError())
     for !engine.Exiting() {
