@@ -14,7 +14,7 @@ WWIDTH :: 1200
 main :: proc() {
     engine.Initialize()
     w, r := engine.CreateWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, WWIDTH, WHEIGHT)
-    t := draw.LoadBareTexture(&r, "toad.png")
+    t := draw.LoadTexture(&r, "toad.png")
     //rec := draw.NewRectangle(WWIDTH/2, WHEIGHT/2, t.size.Width*2, t.size.Height*2)
     //fmt.printf(" w: {}, h: {}, tex: {}", t.size.Width, t.size.Height, t)
     defer engine.Exit(core.AllWindows, core.AllRenderers)
@@ -26,6 +26,6 @@ main :: proc() {
         }
         //fmt.printf("{}\n", engine.GetError())
         //fmt.printf("{}\n", engine.GetError())
-        draw.RenderBareTexture(&r, t)
+        draw.RenderTexture(&r, t)
     }
 }

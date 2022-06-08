@@ -12,9 +12,9 @@ import "core:fmt"
 import "../../../engine"
 import "../math"
 Texture :: struct { //TODO: Get working! children field causes errors to occur
-    using Texture: ^sdl2.Texture,
+    using texture: ^sdl2.Texture,
     size: math.Size,
-    //children: []Texture,
+    children: []Texture,
 }
 Rectangle :: struct {
     using Rect: ^sdl2.Rect,
@@ -49,9 +49,9 @@ LoadTexture :: proc(ren: ^core.renderer, file: string) -> Texture {
     w, h, c: i32
     stb.info(strings.clone_to_cstring(file), &w, &h, &c)
     tex := Texture{
-        Texture = i,
+        texture = i,
         size = math.Size{cast(int)w, cast(int)h},
-        //children = {},
+        children = {},
     }
     fmt.printf("loaded texture: {}, w: {}, h: {}\n", file, w , h)
     return tex
@@ -65,7 +65,7 @@ DestroyTexture :: proc(tex: ^Texture) {
 }
 
 RenderTexture :: proc(ren: ^core.renderer, tex: Texture, rec: ^Rectangle = nil) { //TODO: Fix error
-    sdl2.RenderCopy(ren, tex.Texture, nil, rec)
+    sdl2.RenderCopy(ren, tex, nil, rec)
     //fmt.printf("{}\n", engine.GetError())
 }
 RenderBareTexture :: proc(ren: ^core.renderer, tex: ^sdl2.Texture, rec: ^Rectangle = nil) {
