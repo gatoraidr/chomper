@@ -61,7 +61,7 @@ CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer
     if x == nil {
         panic("Failed to create window")
     }
-    win := core.window{x, len(core.AllWindows)+1}
+    win := core.window{x, len(core.AllWindows)}
     append(&core.AllWindows, &win)
     return win
 
@@ -87,7 +87,7 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     if x == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{x, len(core.AllRenderers)+1}
+    ren := core.renderer{x, len(core.AllRenderers)}
     append(&core.AllRenderers, &ren)
     return ren
 
@@ -127,7 +127,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     if w == nil {
         panic("Failed to create window")
     }
-    win := core.window{w, len(core.AllWindows)+1}
+    win := core.window{w, len(core.AllWindows)}
     append(&core.AllWindows, &win)
     rf: sdl2.RendererFlags
     if len(renderFlags) > 0 {
@@ -149,7 +149,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     if r == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{r, len(core.AllRenderers)+1}
+    ren := core.renderer{r, len(core.AllRenderers)}
     append(&core.AllRenderers, &ren)
     return win, ren
 }
