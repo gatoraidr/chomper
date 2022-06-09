@@ -55,6 +55,7 @@ window_context :: enum {
 extra_window_flags :: enum {
     fullscreen,
     hidden,
+    shown,
     borderless,
     resizable,
     minimized,

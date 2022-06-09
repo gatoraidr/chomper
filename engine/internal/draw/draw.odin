@@ -11,7 +11,7 @@ import "core:strings"
 import "core:fmt"
 import "../../../engine"
 import "../math"
-Texture :: struct { //TODO: Get working! children field causes errors to occur
+Texture :: struct {
     using texture: ^sdl2.Texture,
     size: math.Size,
     children: []Texture,
@@ -64,8 +64,12 @@ DestroyTexture :: proc(tex: ^Texture) {
     sdl2.DestroyTexture(tex)
 }
 
-RenderTexture :: proc(ren: ^core.renderer, tex: Texture, rec: ^Rectangle = nil) { //TODO: Fix error
-    sdl2.RenderCopy(ren, tex, nil, rec)
+RenderTexture :: proc(ren: ^core.renderer, tex: Texture, rec: ^Rectangle = nil) { //* fixed error, apparently even though the default param is nil it doesnt work so the if statement is mandatory
+    if rec == nil {
+        sdl2.RenderCopy(ren, tex, nil, nil)
+    } else {
+        sdl2.RenderCopy(ren, tex, nil, rec)
+    }
     //fmt.printf("{}\n", engine.GetError())
 }
 RenderBareTexture :: proc(ren: ^core.renderer, tex: ^sdl2.Texture, rec: ^Rectangle = nil) {
