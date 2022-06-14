@@ -22,8 +22,8 @@ Rectangle :: struct {
     pos: math.Vector2,
 }
 NewRectangle :: proc(x, y, w, h: int) -> Rectangle {
-    rec := sdl2.Rect{cast(i32)x, cast(i32)y, cast(i32)w, cast(i32)h}
-    r := Rectangle{&rec, math.Size{w, h}, math.Vector2{cast(f32)x, cast(f32)y}}
+    //*i wonder why i have to init the sdl2.Rect struct directly in the Rectangle struct instead of defining it in a seperate variable
+    r := Rectangle{&sdl2.Rect{cast(i32)x, cast(i32)y, cast(i32)w, cast(i32)h}, math.Size{cast(f32)w, cast(f32)h}, math.Vector2{x, y}}
     return r
 }
 clearWindowWithColor :: proc(ren: ^core.renderer, r, g, b, a: u8) {
@@ -45,12 +45,12 @@ clearAndShowRenderer :: proc(ren: ^core.renderer) {
     showRenderer(ren)
 }
 LoadTexture :: proc(ren: ^core.renderer, file: string) -> Texture {
-    i := img.LoadTexture(ren, strings.clone_to_cstring(file))
+    i := img.LoadTexture(ren, strings.clone_to_cstring(file, context.temp_allocator))
     w, h, c: i32
-    stb.info(strings.clone_to_cstring(file), &w, &h, &c)
+    stb.info(strings.clone_to_cstring(file, context.temp_allocator), &w, &h, &c) //? might want to switch to core:image for getting width and height
     tex := Texture{
         texture = i,
-        size = math.Size{cast(int)w, cast(int)h},
+        size = math.Size{cast(f32)w, cast(f32)h},
         children = {},
     }
     fmt.printf("loaded texture: {}, w: {}, h: {}\n", file, w , h)
@@ -60,17 +60,21 @@ LoadBareTexture :: proc(ren: ^core.renderer, file: string) -> ^sdl2.Texture {
     i := img.LoadTexture(ren, strings.clone_to_cstring(file))
     return i
 }
-DestroyTexture :: proc(tex: ^Texture) {
+RemoveTexture :: proc(tex: ^Texture) {
     sdl2.DestroyTexture(tex)
 }
 
-RenderTexture :: proc(ren: ^core.renderer, tex: Texture, rec: ^Rectangle = nil) { //* fixed error, apparently even though the default param is nil it doesnt work so the if statement is mandatory
-    if rec == nil {
-        sdl2.RenderCopy(ren, tex, nil, nil)
-    } else {
-        sdl2.RenderCopy(ren, tex, nil, rec)
-    }
+RenderTexture :: proc(ren: ^core.renderer, tex: Texture, pos: math.Vector2 = {0, 0}) {
+    //fmt.println(cast(int)pos.X)
+    //rec := Rectangle{&sdl2.Rect{cast(i32)pos.X, cast(i32)pos.Y, cast(i32)tex.size.Width, cast(i32)tex.size.Height}, tex.size, pos}
+    rec := NewRectangle(cast(int)pos.X, cast(int)pos.Y, cast(int)tex.size.Width, cast(int)tex.size.Height)
+    sdl2.RenderCopy(ren, tex, nil, rec)
     //fmt.printf("{}\n", engine.GetError())
+}
+RenderTextureEx :: proc(ren: ^core.renderer, tex: Texture, pos: math.Vector2 = {0,0}, Scale: f32) { //TODO: fix another small bug, x and y arent right, confirm by doing WWIDTH/2 and WHEIGHT/2
+    //fmt.println((tex.size.Width * Scale))
+    rec := NewRectangle(pos.X, pos.Y, cast(int)(tex.size.Width * Scale), cast(int)(tex.size.Height * Scale))
+    sdl2.RenderCopy(ren, tex, nil, rec)
 }
 RenderBareTexture :: proc(ren: ^core.renderer, tex: ^sdl2.Texture, rec: ^Rectangle = nil) {
     sdl2.RenderCopy(ren, tex, nil, rec)

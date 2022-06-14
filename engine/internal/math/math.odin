@@ -1,10 +1,10 @@
 package math
 
 Size :: struct {
-    Width: int,
-    Height: int,
+    Width: f32,
+    Height: f32,
 }
 Vector2 :: struct {
-    X: f32,
-    Y: f32,
+    X: int,
+    Y: int,
 }

@@ -1,6 +1,7 @@
 /*
 Package core contains most general constants, structs and enums that are needed for procs
 */
+//TODO: Get deltatime variable up and running, update every frame in the Exiting() proc
 package core
 
 import "core:fmt"

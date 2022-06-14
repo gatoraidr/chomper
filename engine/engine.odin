@@ -27,7 +27,7 @@ GetError :: proc() -> string{
     return sdl2.GetErrorString()
 }
 ///Creates a window with the given title, size and flags
-CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.shown}) -> core.window {
+NewWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.shown}) -> core.window {
     r: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -57,7 +57,7 @@ CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer
             }
         }
     }
-    x := sdl2.CreateWindow(strings.clone_to_cstring(title), cast(i32)x, cast(i32)y, cast(i32)width, cast(i32)height, r)
+    x := sdl2.CreateWindow(strings.clone_to_cstring(title, context.temp_allocator), cast(i32)x, cast(i32)y, cast(i32)width, cast(i32)height, r)
     if x == nil {
         panic("Failed to create window")
     }
@@ -93,7 +93,7 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
 
 }
 ///Creates both a window and implicitly a renderer for the window
-CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.shown}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
+NewWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.shown}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
     wf: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -123,7 +123,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
             }
         }
     }
-    w := sdl2.CreateWindow(strings.clone_to_cstring(title), cast(i32)x, cast(i32)y, cast(i32)width, cast(i32)height, wf)
+    w := sdl2.CreateWindow(strings.clone_to_cstring(title, context.temp_allocator), cast(i32)x, cast(i32)y, cast(i32)width, cast(i32)height, wf)
     if w == nil {
         panic("Failed to create window")
     }
@@ -144,7 +144,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
             }
         }
     }
-    fmt.printf("rf = {}\n", rf)
+    //fmt.printf("rf = {}\n", rf)
     r := sdl2.CreateRenderer(w, renderIndex, rf)
     if r == nil {
         panic("Failed to create renderer")
