@@ -3,6 +3,10 @@
         {
             "name": "core",
             "path": "/home/sharpcdf/Odin/core"
+        },
+        {
+            "name": "vendor",
+            "path": "/home/sharpcdf/Odin/vendor"
         }
     ],
     "enable_document_symbols": true,

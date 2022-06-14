@@ -8,6 +8,8 @@ import "core:os"
 
 import "vendor:sdl2"
 
+Event :: sdl2.Event
+DefaultEvent := Event{}
 undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
 centeredWindowPos :: sdl2.WINDOWPOS_CENTERED
 ExitProc: proc()
@@ -53,6 +55,7 @@ window_context :: enum {
 extra_window_flags :: enum {
     fullscreen,
     hidden,
+    shown,
     borderless,
     resizable,
     minimized,
@@ -63,4 +66,29 @@ renderer_flags :: enum {
     accelerated,
     vsync,
     targetTexture,
+}
+
+_events :: struct {
+    Quit: sdl2.EventType,
+    Terminating: sdl2.EventType,
+    LowMemory: sdl2.EventType,
+    EnteringBackground: sdl2.EventType,
+    EnteredBackground: sdl2.EventType,
+    EnteringForeground: sdl2.EventType,
+    EnteredForeground: sdl2.EventType,
+    DisplayEvent: sdl2.EventType,
+    WindowEvent: sdl2.EventType,
+    SystemEvent: sdl2.EventType,
+    UserEvent: sdl2.EventType,
+    AudioDeviceAdded: sdl2.EventType,
+    AudioDeviceRemoved: sdl2.EventType,
+    ClipboardUpdate: sdl2.EventType,
+    DropFile: sdl2.EventType,
+    DropText: sdl2.EventType,
+    DropBegin: sdl2.EventType,
+    DropComplete: sdl2.EventType,
+    KeyDown: sdl2.EventType,
+    KeyUp: sdl2.EventType,
+    TextEditing: sdl2.EventType,
+    TextInput: sdl2.EventType,
 }

@@ -1,7 +1,6 @@
 /*
 Package core/input provides procs and structs for interfacing with the device input system.
 */
-//TODO: Add controller input struct
 package core
 
 import "vendor:sdl2"

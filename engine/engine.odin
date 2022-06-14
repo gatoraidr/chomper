@@ -9,22 +9,25 @@ import "internal/core"
 import "core:strings"
 import "vendor:sdl2"
 import img "vendor:sdl2/image"
+import "core:fmt"
 ///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
 Exit :: proc(w: [dynamic]^core.window, r: [dynamic]^core.renderer) {
-    core.ExitProc()
     for win in w {
         DestroyWindow(win)
     }
     for ren in r {
         DestroyRenderer(ren)
     }
+    img.Quit()
     sdl2.Quit()
+    core.ExitProc()
 }
+///Returns any error that is encountered, as a string
 GetError :: proc() -> string{
     return sdl2.GetErrorString()
 }
 ///Creates a window with the given title, size and flags
-CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}) -> core.window {
+CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraFlags: []core.extra_window_flags = {core.extra_window_flags.shown}) -> core.window {
     r: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -34,13 +37,15 @@ CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer
         case .vulkan:
             r = sdl2.WINDOW_VULKAN
     }
-    if len(extra_flags) > 0 {
-        for f in extra_flags {
+    if len(extraFlags) > 0 {
+        for f in extraFlags {
             switch f {
                 case .fullscreen:
                     r = r | sdl2.WINDOW_FULLSCREEN
                 case .hidden:
                     r = r | sdl2.WINDOW_HIDDEN
+                case .shown:
+                    r = r | sdl2.WINDOW_SHOWN
                 case .borderless:
                     r = r | sdl2.WINDOW_BORDERLESS
                 case .resizable:
@@ -56,12 +61,12 @@ CreateWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer
     if x == nil {
         panic("Failed to create window")
     }
-    win := core.window{x, len(core.AllWindows)+1}
+    win := core.window{x, len(core.AllWindows)}
     append(&core.AllWindows, &win)
     return win
 
 }
-
+///Creates a renderer for the given core.window
 CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {core.renderer_flags.accelerated}, index: i32 = -1) -> core.renderer {
     r: sdl2.RendererFlags
     if len(flags) > 0 {
@@ -82,13 +87,13 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     if x == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{x, len(core.AllRenderers)+1}
+    ren := core.renderer{x, len(core.AllRenderers)}
     append(&core.AllRenderers, &ren)
     return ren
 
 }
 ///Creates both a window and implicitly a renderer for the window
-CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.resizable}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
+CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.window_context = .opengl, extraWindowFlags: []core.extra_window_flags = {core.extra_window_flags.shown}, renderFlags: []core.renderer_flags = {core.renderer_flags.accelerated}, renderIndex: i32 = -1) -> (core.window, core.renderer) {
     wf: sdl2.WindowFlags
     switch renderer {
         case .opengl:
@@ -105,6 +110,8 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
                     wf = wf | sdl2.WINDOW_FULLSCREEN
                 case .hidden:
                     wf = wf | sdl2.WINDOW_HIDDEN
+                case .shown:
+                    wf = wf | sdl2.WINDOW_SHOWN
                 case .borderless:
                     wf = wf | sdl2.WINDOW_BORDERLESS
                 case .resizable:
@@ -120,7 +127,7 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
     if w == nil {
         panic("Failed to create window")
     }
-    win := core.window{w, len(core.AllWindows)+1}
+    win := core.window{w, len(core.AllWindows)}
     append(&core.AllWindows, &win)
     rf: sdl2.RendererFlags
     if len(renderFlags) > 0 {
@@ -137,11 +144,12 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
             }
         }
     }
+    fmt.printf("rf = {}\n", rf)
     r := sdl2.CreateRenderer(w, renderIndex, rf)
     if r == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{r, len(core.AllRenderers)+1}
+    ren := core.renderer{r, len(core.AllRenderers)}
     append(&core.AllRenderers, &ren)
     return win, ren
 }
@@ -149,9 +157,11 @@ CreateWindow :: proc(title: string, x, y, width, height: int, renderer: core.win
 Initialize :: proc() {
     x := sdl2.Init(sdl2.INIT_EVERYTHING)
     if (x != 0) { panic("Failed to init SDL2") }
+    i := img.Init(img.INIT_PNG | img.INIT_JPG)
+    if (x != 0) { panic("Failed to init SDL2/image") }
     return
 }
-
+///Destroys the given core.renderer
 DestroyRenderer :: proc(r: ^core.renderer) {
     sdl2.DestroyRenderer(r)
     ordered_remove(&core.AllRenderers, r.AllRendererIndex) 
@@ -160,6 +170,28 @@ DestroyRenderer :: proc(r: ^core.renderer) {
 ///Destroys the given core.window
 DestroyWindow :: proc(w: ^core.window) {
     sdl2.DestroyWindow(w)
-    ordered_remove(&core.AllWindows, w.AllWindowIndex)
+    ordered_remove(&core.AllWindows, w.AllWindowIndex) //TODO: fix small bug, the index is out of range which is really fucking weird
     return
+}
+///Polls events to core.DefaultEvent
+UpdateEvents :: proc(event: ^core.Event) {
+    sdl2.PollEvent(event)
+    return
+}
+///Set a proc to run when the app exits
+SetQuitProc :: proc(p: proc()) {
+    core.ExitProc = p
+}
+///Similar to WindowShouldClose() in GLFW, use this for the main game loop
+Exiting :: proc() -> bool {
+    UpdateEvents(&core.DefaultEvent)
+    #partial switch core.DefaultEvent.type {
+        case core.events.Quit:
+            return true
+    }
+    return false
+}
+///Not necessary for the almost the entirety of games, just to be safe because event handling procs use core.DefaultEvent
+SetDefaultEvent :: proc(e: core.Event) {
+    core.DefaultEvent = e
 }

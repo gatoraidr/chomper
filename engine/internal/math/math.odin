@@ -1,8 +1,8 @@
 package math
 
 Size :: struct {
-    Width: f32,
-    Height: f32,
+    Width: int,
+    Height: int,
 }
 Vector2 :: struct {
     X: f32,
