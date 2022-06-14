@@ -67,7 +67,7 @@ RemoveTexture :: proc(tex: ^Texture) {
 RenderTexture :: proc(ren: ^core.renderer, tex: Texture, pos: math.Vector2 = {0, 0}) {
     //fmt.println(cast(int)pos.X)
     //rec := Rectangle{&sdl2.Rect{cast(i32)pos.X, cast(i32)pos.Y, cast(i32)tex.size.Width, cast(i32)tex.size.Height}, tex.size, pos}
-    rec := NewRectangle(cast(int)pos.X, cast(int)pos.Y, cast(int)tex.size.Width, cast(int)tex.size.Height)
+    rec := NewRectangle(pos.X, pos.Y, cast(int)tex.size.Width, cast(int)tex.size.Height)
     sdl2.RenderCopy(ren, tex, nil, rec)
     //fmt.printf("{}\n", engine.GetError())
 }

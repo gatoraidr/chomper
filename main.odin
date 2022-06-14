@@ -28,7 +28,7 @@ main :: proc() {
         }
         //fmt.printf("{}\n", engine.GetError())
         draw.clearWindow(&r)
-        draw.RenderTextureEx(&r, t, math.Vector2{WWIDTH/2, WHEIGHT/2}, 0.5)
+        draw.RenderTextureEx(&r, t, math.Vector2{WWIDTH/2, WHEIGHT/2}, 1)
         draw.showRenderer(&r)
     }
 }
