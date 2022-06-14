@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 /*
 Package core contains most general constants, structs and enums that are needed for procs
 */
+=======
+>>>>>>> c6670c3c80eb8b1d928ca0faba0a082fc7b1e992
 package core
 
 import "core:fmt"
@@ -8,6 +11,7 @@ import "core:os"
 
 import "vendor:sdl2"
 
+<<<<<<< HEAD
 Event :: sdl2.Event
 DefaultEvent := Event{}
 undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
@@ -46,6 +50,15 @@ window :: struct {
 renderer :: struct {
     using Renderer: ^sdl2.Renderer,
     AllRendererIndex: int,
+=======
+undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
+
+window :: struct {
+    using Window: ^sdl2.Window,
+}
+renderer :: struct {
+    using Renderer: ^sdl2.Renderer,
+>>>>>>> c6670c3c80eb8b1d928ca0faba0a082fc7b1e992
 }
 window_context :: enum {
     opengl,

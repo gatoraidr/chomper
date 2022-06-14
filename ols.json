@@ -3,10 +3,13 @@
         {
             "name": "core",
             "path": "/home/sharpcdf/Odin/core"
+<<<<<<< HEAD
         },
         {
             "name": "vendor",
             "path": "/home/sharpcdf/Odin/vendor"
+=======
+>>>>>>> c6670c3c80eb8b1d928ca0faba0a082fc7b1e992
         }
     ],
     "enable_document_symbols": true,
