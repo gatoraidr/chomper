@@ -14,8 +14,6 @@ DefaultEvent := Event{}
 undefinedWindowPos :: sdl2.WINDOWPOS_UNDEFINED
 centeredWindowPos :: sdl2.WINDOWPOS_CENTERED
 ExitProc: proc()
-AllWindows: [dynamic]^window
-AllRenderers: [dynamic]^renderer
 events :: _events{
     Quit = sdl2.EventType.QUIT,
     Terminating = sdl2.EventType.APP_TERMINATING,
@@ -42,11 +40,9 @@ events :: _events{
 }
 window :: struct {
     using Window: ^sdl2.Window,
-    AllWindowIndex: int,
 }
 renderer :: struct {
     using Renderer: ^sdl2.Renderer,
-    AllRendererIndex: int,
 }
 window_context :: enum {
     opengl,

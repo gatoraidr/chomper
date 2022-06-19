@@ -7,16 +7,23 @@ import "internal/assets"
 import "internal/ui"
 import "internal/core"
 import "core:strings"
+//for getting time and deltaTime
+import "core:time"
 import "vendor:sdl2"
 import img "vendor:sdl2/image"
 import "core:fmt"
+
+
+deltaTime: f64
 ///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
-Exit :: proc(w: [dynamic]^core.window, r: [dynamic]^core.renderer) {
-    for win in w {
-        DestroyWindow(win)
-    }
+Exit :: proc(w: []^core.window, r: []^core.renderer) {
     for ren in r {
         DestroyRenderer(ren)
+        fmt.printf("Destroyed renderer: {}\n", ren)
+    }
+    for win in w {
+        DestroyWindow(win)
+        fmt.printf("Destroyed window: {}\n", win)
     }
     img.Quit()
     sdl2.Quit()
@@ -61,8 +68,7 @@ NewWindowNoRenderer :: proc(title: string, x, y, width, height: int, renderer: c
     if x == nil {
         panic("Failed to create window")
     }
-    win := core.window{x, len(core.AllWindows)}
-    append(&core.AllWindows, &win)
+    win := core.window{x}
     return win
 
 }
@@ -87,8 +93,7 @@ CreateRenderContext :: proc(w: ^core.window, flags: []core.renderer_flags = {cor
     if x == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{x, len(core.AllRenderers)}
-    append(&core.AllRenderers, &ren)
+    ren := core.renderer{x}
     return ren
 
 }
@@ -127,8 +132,7 @@ NewWindow :: proc(title: string, x, y, width, height: int, renderer: core.window
     if w == nil {
         panic("Failed to create window")
     }
-    win := core.window{w, len(core.AllWindows)}
-    append(&core.AllWindows, &win)
+    win := core.window{w}
     rf: sdl2.RendererFlags
     if len(renderFlags) > 0 {
         for f in renderFlags {
@@ -149,8 +153,7 @@ NewWindow :: proc(title: string, x, y, width, height: int, renderer: core.window
     if r == nil {
         panic("Failed to create renderer")
     }
-    ren := core.renderer{r, len(core.AllRenderers)}
-    append(&core.AllRenderers, &ren)
+    ren := core.renderer{r}
     return win, ren
 }
 ///Initialize SDL2 and the game engine
@@ -164,13 +167,11 @@ Initialize :: proc() {
 ///Destroys the given core.renderer
 DestroyRenderer :: proc(r: ^core.renderer) {
     sdl2.DestroyRenderer(r)
-    ordered_remove(&core.AllRenderers, r.AllRendererIndex) 
     return
 }
 ///Destroys the given core.window
 DestroyWindow :: proc(w: ^core.window) {
     sdl2.DestroyWindow(w)
-    ordered_remove(&core.AllWindows, w.AllWindowIndex) //TODO: fix small bug, the index is out of range which is really fucking weird
     return
 }
 ///Polls events to core.DefaultEvent
@@ -189,9 +190,20 @@ Exiting :: proc() -> bool {
         case core.events.Quit:
             return true
     }
+    deltaTime = GetDeltaTime()
+    //fmt.println(deltaTime)
     return false
 }
 ///Not necessary for the almost the entirety of games, just to be safe because event handling procs use core.DefaultEvent
 SetDefaultEvent :: proc(e: core.Event) {
     core.DefaultEvent = e
+}
+
+l := time.tick_now()
+GetDeltaTime :: proc() -> f64 {
+    n := time.tick_now()
+    diff := time.tick_diff(l, n)
+    dt := time.duration_seconds(diff)
+    l = n
+    return dt
 }

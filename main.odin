@@ -18,17 +18,15 @@ main :: proc() {
     w, r := engine.NewWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, WWIDTH, WHEIGHT)
     t := draw.LoadTexture(&r, "toad.png")
     defer draw.RemoveTexture(&t)
-    //rec := draw.NewRectangle(WWIDTH/2, WHEIGHT/2, t.size.Width*2, t.size.Height*2)
-    //fmt.printf(" w: {}, h: {}, tex: {}", t.size.Width, t.size.Height, t)
-    defer engine.Exit(core.AllWindows, core.AllRenderers)
-    //fmt.print(engine.GetError())
+    defer engine.Exit({&w}, {&r})
     for !engine.Exiting() {
+        engine.GetError()
+        draw.clearWindow(&r)
         if core.KeyPressed(core.Key.t) {
+            fmt.printf("deltaTime: {}\n", engine.deltaTime)
             fmt.print("t pressed\n")
         }
-        //fmt.printf("{}\n", engine.GetError())
-        draw.clearWindow(&r)
-        draw.RenderTextureEx(&r, t, math.Vector2{WWIDTH/2, WHEIGHT/2}, 1)
+        draw.RenderTextureEx(r, t, math.Vector2{0, 0}, 1)
         draw.showRenderer(&r)
     }
 }

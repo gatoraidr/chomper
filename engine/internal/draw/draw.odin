@@ -14,6 +14,7 @@ import "../math"
 Texture :: struct {
     using texture: ^sdl2.Texture,
     size: math.Size,
+    pos: math.Vector2,
     children: []Texture,
 }
 Rectangle :: struct {
@@ -64,17 +65,20 @@ RemoveTexture :: proc(tex: ^Texture) {
     sdl2.DestroyTexture(tex)
 }
 
-RenderTexture :: proc(ren: ^core.renderer, tex: Texture, pos: math.Vector2 = {0, 0}) {
+RenderTexture :: proc(ren: core.renderer, tex: Texture, pos: math.Vector2 = {0, 0}) {
     //fmt.println(cast(int)pos.X)
     //rec := Rectangle{&sdl2.Rect{cast(i32)pos.X, cast(i32)pos.Y, cast(i32)tex.size.Width, cast(i32)tex.size.Height}, tex.size, pos}
     rec := NewRectangle(pos.X, pos.Y, cast(int)tex.size.Width, cast(int)tex.size.Height)
     sdl2.RenderCopy(ren, tex, nil, rec)
     //fmt.printf("{}\n", engine.GetError())
 }
-RenderTextureEx :: proc(ren: ^core.renderer, tex: Texture, pos: math.Vector2 = {0,0}, Scale: f32) { //TODO: fix another small bug, x and y arent right, confirm by doing WWIDTH/2 and WHEIGHT/2
+RenderTextureEx :: proc(ren: core.renderer, tex: Texture, pos: math.Vector2 = {0,0}, Scale: f32) { //TODO: fix another small bug, x and y arent right, confirm by doing WWIDTH/2 and WHEIGHT/2
     //fmt.println((tex.size.Width * Scale))
     rec := NewRectangle(pos.X, pos.Y, cast(int)(tex.size.Width * Scale), cast(int)(tex.size.Height * Scale))
     sdl2.RenderCopy(ren, tex, nil, rec)
+}
+RenderTextureRecs :: proc(ren: core.renderer, tex: Texture, SrcRec: Rectangle, DestRec: Rectangle) {
+    sdl2.RenderCopy(ren, tex, SrcRec, DestRec)
 }
 RenderBareTexture :: proc(ren: ^core.renderer, tex: ^sdl2.Texture, rec: ^Rectangle = nil) {
     sdl2.RenderCopy(ren, tex, nil, rec)
