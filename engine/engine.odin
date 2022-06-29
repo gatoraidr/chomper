@@ -12,7 +12,7 @@ import "core:time"
 import "vendor:sdl2"
 import img "vendor:sdl2/image"
 import "core:fmt"
-
+import "internal/draw"
 
 deltaTime: f64
 ///Exits the application, running the core.ExitProc and destroying the given windows and renderers in the process.
@@ -192,6 +192,7 @@ Exiting :: proc() -> bool {
     }
     deltaTime = GetDeltaTime()
     //fmt.println(deltaTime)
+    draw.clearWindow(&r)
     return false
 }
 ///Not necessary for the almost the entirety of games, just to be safe because event handling procs use core.DefaultEvent
