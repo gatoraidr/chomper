@@ -4,6 +4,7 @@ import "vendor:sdl2"
 import "../math"
 import "../../../engine"
 import "../core"
+import "core:fmt"
 AnimationTexture :: struct {
     using Texture: Texture,
     frames: int,
@@ -11,27 +12,48 @@ AnimationTexture :: struct {
     frameWidth: int,
     frameTime: f64,
 }
-runAnimation :: proc(ren: ^core.renderer, animation: ^AnimationTexture, x: int, y: int, speed: int = 1) { //make deltaTime first
-    if animation.frameTime >= speed { //animation speed
-        animation.frameTime = 0
-        if animation.currentFrame >= animation.frames {
-            animation.currentFrame = 0
+RunAnimation :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int, speed: f64 = 1, reverse := false) {
+    if anim.frameTime >= speed { //animation speed
+        anim.frameTime = 0
+        if reverse {
+            Last(anim)
         } else {
-            animation.currentFrame += 1
+            Next(anim)
         }
-    } else {
-        animation.frameTime += engine.deltaTime
     }
-    clamp(plr.currentFrame, 1, plr.frames)
-    RenderTextureRecs(ren, animation, NewRectangle(0, 0, animation.frameWidth * animation.currentFrame, animation.size.Height), NewRectangle(x, y, animation.frameWidth * animation.currentFrame, animation.size.Height))
+    anim.frameTime += engine.deltaTime
+    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, cast(int)anim.size.Height)
+    dst := NewRectangle(x, y, anim.frameWidth, cast(int)anim.size.Height)
+    RenderTextureRecs(ren, anim, &src, &dst)
+    //fmt.printf("animation continuing:\nft = %d\ncf = %d\n\n", anim.frameTime, anim.currentFrame)
+}
+RunAnimationEx :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int, speed: f64 = 1, scale: f64 = 1, reverse := false) //!do do do
+Pause :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int) {
+    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, cast(int)anim.size.Height)
+    dst := NewRectangle(x, y, anim.frameWidth, cast(int)anim.size.Height)
+    RenderTextureRecs(ren, anim, &src, &dst)
+}
+Next :: proc(anim: ^AnimationTexture) {
+    if anim.currentFrame < anim.frames-1 {
+        anim.currentFrame += 1
+    } else {
+        anim.currentFrame = 0
+    }
+    anim.currentFrame = clamp(anim.currentFrame, 0, anim.frames)
 }
 
-newAnimation :: proc(tex: Texture, frames: int, frameTime: f64 = 0.1) -> AnimationTexture{
+Last :: proc(anim: ^AnimationTexture) {
+    anim.currentFrame -= 1
+    if anim.currentFrame < 0 {
+        anim.currentFrame = anim.frames
+    }
+}
+newAnimation :: proc(tex: Texture, frames: int) -> AnimationTexture{
     return AnimationTexture {
         tex,
         frames,
         0,
         cast(int)tex.size.Width / frames,
-        frameTime,
+        0,
     }
 }
