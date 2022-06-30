@@ -22,15 +22,28 @@ RunAnimation :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int, spe
         }
     }
     anim.frameTime += engine.deltaTime
-    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, cast(int)anim.size.Height)
-    dst := NewRectangle(x, y, anim.frameWidth, cast(int)anim.size.Height)
+    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, anim.size.Height)
+    dst := NewRectangle(x, y, anim.frameWidth, anim.size.Height)
     RenderTextureRecs(ren, anim, &src, &dst)
     //fmt.printf("animation continuing:\nft = %d\ncf = %d\n\n", anim.frameTime, anim.currentFrame)
 }
-RunAnimationEx :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int, speed: f64 = 1, scale: f64 = 1, reverse := false) //!do do do
+RunAnimationEx :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int, speed: f64 = 1, scale: f64 = 1, reverse := false) {
+    if anim.frameTime >= speed { //animation speed
+        anim.frameTime = 0
+        if reverse {
+            Last(anim)
+        } else {
+            Next(anim)
+        }
+    }
+    anim.frameTime += engine.deltaTime
+    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, anim.size.Height)
+    dst := NewRectangle(x, y, cast(int)(cast(f64)anim.frameWidth * scale), cast(int)(cast(f64)anim.size.Height * scale))
+    RenderTextureRecs(ren, anim, &src, &dst)
+}
 Pause :: proc(ren: core.renderer, anim: ^AnimationTexture, x, y: int) {
-    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, cast(int)anim.size.Height)
-    dst := NewRectangle(x, y, anim.frameWidth, cast(int)anim.size.Height)
+    src := NewRectangle(anim.currentFrame * anim.frameWidth, 0, anim.frameWidth, anim.size.Height)
+    dst := NewRectangle(x, y, anim.frameWidth, anim.size.Height)
     RenderTextureRecs(ren, anim, &src, &dst)
 }
 Next :: proc(anim: ^AnimationTexture) {
@@ -48,12 +61,16 @@ Last :: proc(anim: ^AnimationTexture) {
         anim.currentFrame = anim.frames
     }
 }
-newAnimation :: proc(tex: Texture, frames: int) -> AnimationTexture{
+NewAnimationFromTexture :: proc(tex: Texture, frames: int) -> AnimationTexture{
     return AnimationTexture {
         tex,
         frames,
         0,
-        cast(int)tex.size.Width / frames,
+        tex.size.Width / frames,
         0,
     }
+}
+NewAnimationTexture :: proc(ren: core.renderer, file: string, frames: int) -> AnimationTexture {
+    tex := LoadTexture(ren, file)
+    return NewAnimationFromTexture(tex, frames)
 }

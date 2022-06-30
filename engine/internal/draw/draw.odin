@@ -11,6 +11,8 @@ import "core:strings"
 import "core:fmt"
 import "../../../engine"
 import "../math"
+
+Flip :: sdl2.RendererFlip
 Texture :: struct {
     using texture: ^sdl2.Texture,
     size: math.Size,
@@ -24,26 +26,26 @@ Rectangle :: struct {
 }
 NewRectangle :: proc(x, y, w, h: int) -> Rectangle {
     //*i wonder why i have to init the sdl2.Rect struct directly in the Rectangle struct instead of defining it in a seperate variable
-    r := Rectangle{sdl2.Rect{cast(i32)x, cast(i32)y, cast(i32)w, cast(i32)h}, math.Size{cast(f32)w, cast(f32)h}, math.Vector2{x, y}}
+    r := Rectangle{sdl2.Rect{cast(i32)x, cast(i32)y, cast(i32)w, cast(i32)h}, math.Size{w, h}, math.Vector2{x, y}}
     return r
 }
-clearWindowWithColor :: proc(ren: core.renderer, r, g, b, a: u8) {
+ClearWindowWithColor :: proc(ren: core.renderer, r, g, b, a: u8) {
     sdl2.SetRenderDrawColor(ren, r, g, b, a)
     sdl2.RenderClear(ren)
 }
-clearWindow :: proc(ren: core.renderer) {
+ClearWindow :: proc(ren: core.renderer) {
     sdl2.RenderClear(ren)
 }
-showRenderer :: proc(ren: core.renderer) {
+ShowRenderer :: proc(ren: core.renderer) {
     sdl2.RenderPresent(ren)
 }
-clearWithColorAndShowRenderer :: proc(ren: core.renderer, r, g, b, a: u8) {
-    clearWindowWithColor(ren, r, g, b, a)
-    showRenderer(ren)
+ClearWithColorAndShowRenderer :: proc(ren: core.renderer, r, g, b, a: u8) {
+    ClearWindowWithColor(ren, r, g, b, a)
+    ShowRenderer(ren)
 }
-clearAndShowRenderer :: proc(ren: core.renderer) {
-    clearWindow(ren)
-    showRenderer(ren)
+ClearAndShowRenderer :: proc(ren: core.renderer) {
+    ClearWindow(ren)
+    ShowRenderer(ren)
 }
 LoadTexture :: proc(ren: core.renderer, file: string) -> Texture {
     i := img.LoadTexture(ren, strings.clone_to_cstring(file, context.temp_allocator))
@@ -51,15 +53,11 @@ LoadTexture :: proc(ren: core.renderer, file: string) -> Texture {
     stb.info(strings.clone_to_cstring(file, context.temp_allocator), &w, &h, &c) //? might want to switch to core:image for getting width and height
     tex := Texture{
         texture = i,
-        size = math.Size{cast(f32)w, cast(f32)h},
+        size = math.Size{cast(int)w, cast(int)h},
         children = {},
     }
     fmt.printf("loaded texture: {}, w: {}, h: {}\n", file, w , h)
     return tex
-}
-LoadBareTexture :: proc(ren: ^core.renderer, file: string) -> ^sdl2.Texture {
-    i := img.LoadTexture(ren, strings.clone_to_cstring(file))
-    return i
 }
 RemoveTexture :: proc(tex: Texture) {
     sdl2.DestroyTexture(tex)
@@ -68,18 +66,15 @@ RemoveTexture :: proc(tex: Texture) {
 RenderTexture :: proc(ren: core.renderer, tex: Texture, pos: math.Vector2 = {0, 0}) {
     //fmt.println(cast(int)pos.X)
     //rec := Rectangle{&sdl2.Rect{cast(i32)pos.X, cast(i32)pos.Y, cast(i32)tex.size.Width, cast(i32)tex.size.Height}, tex.size, pos}
-    rec := NewRectangle(pos.X, pos.Y, cast(int)tex.size.Width, cast(int)tex.size.Height)
+    rec := NewRectangle(pos.X, pos.Y, tex.size.Width, tex.size.Height)
     sdl2.RenderCopy(ren, tex, nil, &rec)
     //fmt.printf("{}\n", engine.GetError())
 }
-RenderTextureEx :: proc(ren: core.renderer, tex: Texture, pos: math.Vector2 = {0,0}, Scale: f32) { //TODO: fix another small bug, x and y arent right, confirm by doing WWIDTH/2 and WHEIGHT/2
+RenderTextureEx :: proc(ren: core.renderer, tex: Texture, pos: math.Vector2 = {0,0}, Scale: f64) {
     //fmt.println((tex.size.Width * Scale))
-    rec := NewRectangle(pos.X, pos.Y, cast(int)(tex.size.Width * Scale), cast(int)(tex.size.Height * Scale))
+    rec := NewRectangle(pos.X, pos.Y, cast(int)(cast(f64)tex.size.Width * Scale), cast(int)(cast(f64)tex.size.Height * Scale))
     sdl2.RenderCopy(ren, tex, nil, &rec)
 }
 RenderTextureRecs :: proc(ren: core.renderer, tex: Texture, SrcRec: ^Rectangle, DestRec: ^Rectangle) {
     sdl2.RenderCopy(ren, tex, SrcRec, DestRec)
-}
-RenderBareTexture :: proc(ren: core.renderer, tex: ^sdl2.Texture, rec: ^Rectangle = nil) {
-    sdl2.RenderCopy(ren, tex, nil, rec)
 }

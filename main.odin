@@ -16,19 +16,18 @@ WWIDTH :: 700
 main :: proc() {
     engine.Initialize()
     w, r := engine.NewWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, WWIDTH, WHEIGHT)
-    t := draw.LoadTexture(r, "pacman.png")
-    anim := draw.newAnimation(t, 4)
-    defer draw.RemoveTexture(t)
+    anim := draw.NewAnimationTexture(r, "pacman.png", 4)
+    defer draw.RemoveTexture(anim)
     defer engine.Exit({&w}, {&r})
     for !engine.Exiting() {
-        draw.clearWindow(r)
+        draw.ClearWindow(r)
         engine.GetError()
         if core.KeyPressed(core.Key.t) {
             fmt.printf("deltaTime: {}\n", engine.deltaTime)
             fmt.print("t pressed\n")
         }
-        draw.RunAnimation(r, &anim, 0, 0, 0.2)
-        //draw.RenderTextureEx(r, t, math.Vector2{0, 0}, 1)
-        draw.showRenderer(r)
+        draw.RunAnimationEx(r, &anim, 0, 0, 0.2, 3)
+        //draw.RenderTextureEx(r, t, math.Vector2{0, 0}, 2)
+        draw.ShowRenderer(r)
     }
 }
