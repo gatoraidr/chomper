@@ -72,5 +72,5 @@ NewSpritesheetFromTexture :: proc(tex: Texture, frames: int) -> AnimationTexture
 }
 NewSpritesheet :: proc(ren: core.renderer, file: string, frames: int) -> AnimationTexture {
     tex := LoadTexture(ren, file)
-    return NewAnimationFromTexture(tex, frames)
+    return NewSpritesheetFromTexture(tex, frames)
 }
