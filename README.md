@@ -1,14 +1,23 @@
 # chomper
 
-A basic, sdl2-based game engine for Odin
+A basic, super duper high-level game engine for Odin, soon to be ported to Nim
 
 
-the goal of this game engine is to make a Street Fighters-type game. When that happens, i can die happy
+when i can make a game with this piece of junk i can die happy
 
 # todo
 
 - add logging procs and debug mode
-- add animation procs
 - add audio procs
 - add controller input
-- add deltaTime and time variables
+- add procs for drawing shapes and lines
+- add custom ui
+
+# done
+
+- add animation procs
+- add texture loading and rendering procs
+- add keyboard input
+- add delta time
+- add custom rendering procs
+- finish looping proc

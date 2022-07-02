@@ -16,7 +16,7 @@ WWIDTH :: 700
 main :: proc() {
     engine.Initialize()
     w, r := engine.NewWindow("Hello World", core.centeredWindowPos, core.centeredWindowPos, WWIDTH, WHEIGHT)
-    anim := draw.NewAnimationTexture(r, "pacman.png", 4)
+    anim := draw.NewSpritesheet(r, "pacman.png", 4)
     defer draw.RemoveTexture(anim)
     defer engine.Exit({&w}, {&r})
     for !engine.Exiting() {

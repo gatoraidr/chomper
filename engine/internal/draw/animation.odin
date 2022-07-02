@@ -61,7 +61,7 @@ Last :: proc(anim: ^AnimationTexture) {
         anim.currentFrame = anim.frames
     }
 }
-NewAnimationFromTexture :: proc(tex: Texture, frames: int) -> AnimationTexture{
+NewSpritesheetFromTexture :: proc(tex: Texture, frames: int) -> AnimationTexture{
     return AnimationTexture {
         tex,
         frames,
@@ -70,7 +70,7 @@ NewAnimationFromTexture :: proc(tex: Texture, frames: int) -> AnimationTexture{
         0,
     }
 }
-NewAnimationTexture :: proc(ren: core.renderer, file: string, frames: int) -> AnimationTexture {
+NewSpritesheet :: proc(ren: core.renderer, file: string, frames: int) -> AnimationTexture {
     tex := LoadTexture(ren, file)
     return NewAnimationFromTexture(tex, frames)
 }
