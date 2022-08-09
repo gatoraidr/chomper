@@ -1,6 +1,6 @@
 # chomper
 
-A basic, super duper high-level game engine for Odin, soon to be ported to Nim
+A basic, super duper high-level game engine for Odin, now defunct
 
 
 when i can make a game with this piece of junk i can die happy
