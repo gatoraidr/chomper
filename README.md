@@ -1,5 +1,8 @@
 # chomper
 
+## Notice
+I stopped updating this to focus more on haxe, but I won't archive it because I might come back to it and finish it in the future. It was pretty fun to make, and gave me insane headaches
+
 A basic, wip, super duper high-level game engine for Odin, now defunct
 
 
